@@ -50,6 +50,23 @@ struct BetterCArray(T) {
         return push(element);
     }
 
+    // Borrowed views: do not use after freeing or a reallocating append.
+    // Empty slices return null to avoid arithmetic on a null buffer.
+    T[] opSlice() {
+        if (_length == 0) return null;
+        return data[0 .. _length];
+    }
+
+    T[] opSlice(size_t start, size_t end) {
+        assert(start <= end && end <= _length);
+        if (start == end) return null;
+        return data[start .. end];
+    }
+
+    size_t opDollar() const {
+        return _length;
+    }
+
     // Get the number of elements
     size_t length() const {
         return _length;
