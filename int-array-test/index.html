@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+
+<body>
+    <script>
+        async function main() {
+            const response = await fetch("array.wasm");
+            const bytes = await response.arrayBuffer();
+
+            const { instance } =
+                await WebAssembly.instantiate(bytes);
+
+            const wasm = instance.exports;
+
+            wasm.testArray();
+
+            console.log("Length:", wasm.getLength());
+
+            console.log("Element 0:", wasm.getElement(0));
+            console.log("Element 1:", wasm.getElement(1));
+            console.log("Element 2:", wasm.getElement(2));
+        }
+
+        main();
+    </script>
+</body>
+
+</html>
