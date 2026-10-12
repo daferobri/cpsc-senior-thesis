@@ -43,6 +43,13 @@ struct BetterCArray(T) {
         return true;
     }
 
+    // Append with ~=; returns false if allocation or capacity growth fails.
+    bool opOpAssign(string op)(T element)
+        if (op == "~")
+    {
+        return push(element);
+    }
+
     // Get the number of elements
     size_t length() const {
         return _length;
