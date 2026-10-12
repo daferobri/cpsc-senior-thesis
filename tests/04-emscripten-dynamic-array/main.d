@@ -88,10 +88,76 @@ private bool checkStringEdgeCases() {
     return valid;
 }
 
+private bool checkIntSlices() {
+    BetterCArray!int array;
+    if (array[].length != 0 || array[0 .. 0].length != 0 ||
+        array[0 .. $].length != 0) return false;
+
+    foreach (i; 0 .. 9) {
+        if (!(array ~= i * 10)) return false;
+    }
+    auto capacity = array.getCapacity();
+    auto all = array[];
+    if (all.length != 9) return false;
+    foreach (i; 0 .. all.length) {
+        if (all[i] != cast(int) i * 10) return false;
+    }
+
+    auto middle = array[2 .. 5];
+    if (middle.length != 3 || middle[0] != 20 ||
+        middle[1] != 30 || middle[2] != 40) return false;
+    auto tail = array[7 .. $];
+    if (tail.length != 2 || tail[0] != 70 || tail[1] != 80)
+        return false;
+    if (array[0 .. 0].length != 0 || array[4 .. 4].length != 0 ||
+        array[$ .. $].length != 0) return false;
+
+    // Overlapping views share the owner's storage.
+    middle[0] = -20;
+    if (array.get(2) != -20 || all[2] != -20) return false;
+    all[8] = 123;
+    if (tail[1] != 123 || array.get(8) != 123) return false;
+    if (array.length() != 9 || array.getCapacity() != capacity)
+        return false;
+
+    // Never access old views after a possible reallocation.
+    all = null;
+    middle = null;
+    tail = null;
+    foreach (i; 9 .. 33) {
+        if (!(array ~= i * 10)) return false;
+    }
+    auto fresh = array[30 .. $];
+    if (fresh.length != 3 || fresh[0] != 300 ||
+        fresh[1] != 310 || fresh[2] != 320) return false;
+    fresh = null;
+    array.freeMemory();
+    if (array[].length != 0 || array[0 .. $].length != 0)
+        return false;
+    if (!(array ~= 42)) return false;
+    return array[].length == 1 && array[][0] == 42;
+}
+
+private bool checkStringSlices() {
+    BetterCArray!string array;
+    if (array[].length != 0) return false;
+    if (!(array ~= "") || !(array ~= "A") || !(array ~= "Hello"))
+        return false;
+    auto tail = array[1 .. $];
+    if (tail.length != 2 || tail[0].length != 1 ||
+        tail[0][0] != 'A' || tail[1].length != 5) return false;
+    // Replace a string slice descriptor; character data is still borrowed.
+    tail[0] = "changed";
+    auto value = array.get(1);
+    if (value.length != 7 || value[0] != 'c') return false;
+    return array[0 .. 1][0].length == 0 &&
+        array[$ .. $].length == 0;
+}
+
 __gshared BetterCArray!int numbers;
 
 int testNumArray() {
-    if (!checkIntEdgeCases()) return 0;
+    if (!checkIntEdgeCases() || !checkIntSlices()) return 0;
     foreach (i; 1 .. 100) {
         if (!numbers.push(i)) return 0;
         
@@ -121,7 +187,7 @@ int testNumFreeMemory() {
 __gshared BetterCArray!string words;
 
 int testStringArray() {
-    if (!checkStringEdgeCases()) return 0;
+    if (!checkStringEdgeCases() || !checkStringSlices()) return 0;
     foreach (i; 1 .. 100) {
         if (!words.push("Hello")) return 0;
     }
