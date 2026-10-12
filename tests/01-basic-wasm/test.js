@@ -2,7 +2,7 @@ const fs = require("node:fs");
 
 async function main() {
     // Read the compiled WebAssembly file
-    const wasmBytes = fs.readFileSync("./test.wasm");
+    const wasmBytes = fs.readFileSync("./basic.wasm");
 
     // Instantiate the WebAssembly module
     const { instance } = await WebAssembly.instantiate(
