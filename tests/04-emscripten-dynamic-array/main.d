@@ -1,6 +1,12 @@
-import core.stdc.stdlib : malloc, realloc, free;
+import core.stdc.stdlib : malloc, realloc, free, abort;
 
 extern (C):
+
+// LDC's BetterC assertion/bounds-failure hook for the Emscripten target.
+// Terminate on failure so an invalid access cannot silently pass a test.
+void __assert(const(char)* message, const(char)* file, uint line) {
+    abort();
+}
 
 struct BetterCArray(T) {
     private T* data;
