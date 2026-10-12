@@ -1,15 +1,19 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+cd "$(dirname "$0")"
+
+mkdir -p build/node
+
 ldc2 \
     -mtriple=wasm32-unknown-emscripten \
     -betterC \
     -c \
-    -of=array.o \
+    -of=build/node/array.o \
     array.d
 
-emcc array.o \
-    -o array.js \
+emcc build/node/array.o \
+    -o build/node/array.js \
     -sMODULARIZE=1 \
     -sENVIRONMENT=node \
     -sALLOW_MEMORY_GROWTH=1 \
@@ -17,4 +21,6 @@ emcc array.o \
     -sEXPORTED_RUNTIME_METHODS='["ccall"]' \
     --no-entry
 
-node test.js
+cp test.js build/node/
+
+node build/node/test.js

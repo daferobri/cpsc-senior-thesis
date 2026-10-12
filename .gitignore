@@ -1,3 +1,6 @@
 # Generated WebAssembly files
 *.wasm
 *.o
+
+# Generated test builds
+tests/*/build/
