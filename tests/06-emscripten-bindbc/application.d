@@ -2,47 +2,45 @@ module application;
 
 import bindbc.sdl;
 
-import sdl_abstraction;
+extern(C) alias MainLoopCallback = void function();
+extern(C) void emscripten_set_main_loop(MainLoopCallback callback, int fps, int simulateInfiniteLoop);
 
-extern (C) struct Application {
-    SDL_Window* mWindow = null;
-    SDL_Renderer* mRenderer = null;
+struct Application {
+    SDL_Window* mWindow;
+    SDL_Renderer* mRenderer;
 
-    this() {
-        mWindow = SDL_CreateWindow("bindbc-test", 640, 480, SDL_WINDOW_ALWAYS_ON_TOP);
-
+    bool initialize() {
+        mWindow = SDL_CreateWindow("bindbc-test", 640, 480, 0);
+        if (mWindow is null) return false;
         mRenderer = SDL_CreateRenderer(mWindow, null);
+        if (mRenderer is null) {
+            SDL_DestroyWindow(mWindow);
+            mWindow = null;
+            return false;
+        }
+        return true;
     }
 
-    ~this() {
-        SDL_DestroyRenderer(mRenderer);
-        SDL_DestroyWindow(mWindow);
-        shutdownSDL();
-    }
-
-    void Input() {
-
-    }
-
-    void Update() {
-
-    }
-
+    void Input() { }
+    void Update() { }
     void Render() {
-        SDL_SetRenderDrawColor(mRenderer,100,190,255,SDL_ALPHA_OPAQUE);
+        SDL_SetRenderDrawColor(mRenderer, 100, 190, 255, SDL_ALPHA_OPAQUE);
         SDL_RenderClear(mRenderer);
         SDL_RenderPresent(mRenderer);
     }
-
     void AdvanceFrame() {
         Input();
         Update();
         Render();
     }
-
-    void RunLoop() {
-        while(true) {
-            AdvanceFrame();
-        }
+    void RunLoop() { emscripten_set_main_loop(&frameCallback, 0, 0); }
+    void shutdown() {
+        if (mRenderer !is null) SDL_DestroyRenderer(mRenderer);
+        if (mWindow !is null) SDL_DestroyWindow(mWindow);
+        mRenderer = null;
+        mWindow = null;
     }
 }
+
+__gshared Application app;
+extern(C) void frameCallback() { app.AdvanceFrame(); }
