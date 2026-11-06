@@ -1,0 +1,17 @@
+{
+	"dependencies": {
+		"bindbc-sdl": "~>2.4.4"
+	},
+    "targetType": "none",
+    "targetPath": "build/web",
+    "targetName": "main",
+	"name": "06-emscripten-bindbc",
+    "subConfigurations": {
+        "bindbc-sdl": "staticBC"
+    },
+    "buildOptions": ["betterC"],
+    "dflags-ldc": [
+        "-mtriple=wasm32-unknown-emscripten"
+    ],
+    "postBuildCommands": ["bash link.sh"]
+}
