@@ -22,4 +22,5 @@ ldc2 -mtriple=wasm32-unknown-emscripten -betterC \
 # Some BindBC modules may also need to be compiled as Wasm objects.
 # Never link the native .dub/cache/*.a archives here.
 emcc build/web/*.o -o build/web/index.html \
-    --use-port=sdl3 -sALLOW_MEMORY_GROWTH=1 -sASSERTIONS=2 -g
+    --use-port=sdl3 --preload-file assets@/assets \
+    -sALLOW_MEMORY_GROWTH=1 -sASSERTIONS=2 -g

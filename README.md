@@ -149,8 +149,15 @@ Uses BindBC's static SDL bindings and splits the application across three files:
 - `main.d` initializes SDL and starts the application.
 - `sdl_abstraction.d` wraps SDL initialization and shutdown.
 - `application.d` owns the window and renderer and registers an Emscripten frame
-  callback. Input and update methods are currently placeholders; rendering clears
-  the window to light blue each frame.
+  callback. Input and update methods are currently placeholders; rendering displays
+  the Gravity Jump start screen copied from the game project's assets. This is a
+  static image demonstration; its menu text is not interactive.
+
+The BMP is stored in `tests/06-emscripten-bindbc/assets/`. The build uses
+`--preload-file assets@/assets` to bundle it into Emscripten's virtual filesystem.
+Keep the generated `.data` file beside the HTML, JavaScript, and Wasm files when
+serving or sharing the demo. Texture loading happens once during initialization,
+and `shutdown()` releases the texture before the renderer and window.
 
 Resolve dependencies and attempt the browser build from the experiment directory:
 
