@@ -1,16 +1,28 @@
 {
     "name": "06-emscripten-bindbc",
-    "targetType": "none",
+    "targetType": "staticLibrary",
     "dependencies": {
         "bindbc-sdl": "~>2.4.4"
     },
     "subConfigurations": {
         "bindbc-sdl": "staticBC"
     },
+    "versions": [
+        "BindSDL_Static",
+        "SDL_3_4_2"
+    ],
     "buildOptions": [
         "betterC"
     ],
-    "postGenerateCommands": [
-        "bash build.sh"
+    "targetName": "application",
+    "targetPath": "build/web",
+    "sourcePaths": [],
+    "sourceFiles": [
+        "main.d",
+        "application.d",
+        "sdl_abstraction.d"
+    ],
+    "dflags-ldc": [
+        "-mtriple=wasm32-unknown-emscripten"
     ]
 }

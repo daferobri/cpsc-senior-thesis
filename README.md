@@ -159,30 +159,17 @@ Keep the generated `.data` file beside the HTML, JavaScript, and Wasm files when
 serving or sharing the demo. Texture loading happens once during initialization,
 and `shutdown()` releases the texture before the renderer and window.
 
-Resolve dependencies and attempt the browser build from the experiment directory:
+Build from the experiment directory:
 
 ```bash
 cd tests/06-emscripten-bindbc
-dub describe --data=import-paths
-bash build.sh
+bash scripts/build.sh
 ```
 
-The script defaults to these DUB cache source paths:
-
-```text
-~/.dub/packages/bindbc-sdl/2.4.4/bindbc-sdl/source
-~/.dub/packages/bindbc-common/1.0.5/bindbc-common/source
-```
-
-If your cache layout differs, set `SDL_DIR` and `COMMON_DIR` to the corresponding
-source directories reported by DUB before running `build.sh`.
-
-This build path is experimental: `build.sh` compiles the three local modules,
-but additional BindBC modules may need to be compiled into Wasm objects to
-resolve symbols at link time. Native DUB `.a` archives cannot be linked into
-the Wasm program. The older `link.sh` expects `build/main.o`, whereas the current
-build script writes objects to `build/web/`; use `build.sh` as the starting point.
-The DUB manifest also registers `build.sh` as a post-generation command.
+DUB resolves dependency paths and compiles the application and BindBC sources
+for WebAssembly in BetterC mode. The build script then runs `scripts/link.sh` to
+link the generated archive with Emscripten's SDL3 port and preload the assets.
+See the [experiment guide](tests/06-emscripten-bindbc/README.md) for details.
 
 If linking succeeds, serve the generated page:
 
@@ -217,8 +204,8 @@ inspection and do not provide automated graphics assertions.
 Experiments 03–05 provide `clean.sh` scripts that remove their generated `build/`
 directories. Experiments 01–02 provide cleanup scripts for local `.o` and `.wasm`
 files; run those from their respective directories. Their cleanup commands can
-report an error when matching artifacts do not exist. Experiment 06 has no
-cleanup script. Generated `.o`, `.wasm`, and per-experiment `build/` directories
+report an error when matching artifacts do not exist. Experiment 06 provides
+`scripts/clean.sh` to remove its `build/` and local `.dub/` directories. Generated `.o`, `.wasm`, and per-experiment `build/` directories
 are ignored by Git.
 
 ## Troubleshooting

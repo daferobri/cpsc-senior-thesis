@@ -14,6 +14,8 @@ bool initializeSDL() {
     }
 
     printf("SDL initialized successfully\n");
+    printf("SDL version: %u.%u.%u\n",
+        SDL_MAJOR_VERSION, SDL_MINOR_VERSION, SDL_MICRO_VERSION);
     return true;
 }
 
