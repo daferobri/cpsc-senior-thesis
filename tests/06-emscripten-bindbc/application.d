@@ -21,9 +21,9 @@ struct Application {
             return false;
         }
         // Emscripten preloads this file into its virtual filesystem.
-        auto surface = SDL_LoadPNG("assets/samus.png");
-        // PNGs are now supported in standard SDL as of 3.4.0
-        // auto surface = SDL_LoadBMP("assets/background.bmp");
+        // auto surface = SDL_LoadPNG("assets/samus.png");
+        // PNGs are now also supported in standard SDL as of 3.4.0
+        auto surface = SDL_LoadBMP("assets/background.bmp");
         if (surface is null) {
             printf("Could not load background: %s\n", SDL_GetError());
             shutdown();
